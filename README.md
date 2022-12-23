@@ -2,8 +2,8 @@
 
 ```bash
 # clone project
-git clone https://github.com/johnnynunez/M3_Project.git
-cd M3_Project
+git clone https://github.com/guillem-cf/M4_Project
+cd M4_Project
 
 # [OPTIONAL] create conda environment
 conda create -n m4 python=3.10
