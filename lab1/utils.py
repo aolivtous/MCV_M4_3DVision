@@ -20,7 +20,11 @@ def line_draw(line, canv, size, color=(255,255,255)):
     canv.line([beg, end], width=4, fill=color)
 
 
-def plot_img(img, do_not_use=[0]):
+def plot_img(img, do_not_use=[0], axis=None):
     plt.figure(do_not_use[0])
     do_not_use[0] += 1
-    plt.imshow(img)
+    if axis is None:
+        plt.imshow(img)
+    else:
+        plt.imshow(img, extent=axis)
+
