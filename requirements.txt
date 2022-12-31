@@ -1,7 +1,9 @@
 # --------- Libraries --------- #
-numpy>=1.24.0
+numpy>=1.24.1
 scikit-learn>=1.2.0
 opencv-contrib-python>=4.7.0.68
+Pillow>=9.3.0
 tqdm>=4.64.1
+matplotlib>=3.6.2
 notebook
 jupyterlab
