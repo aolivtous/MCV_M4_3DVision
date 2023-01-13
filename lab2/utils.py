@@ -1,4 +1,6 @@
 import numpy as np
+import math
+import sys
 from math import ceil
 import matplotlib.pyplot as plt
 from scipy.ndimage import map_coordinates
@@ -71,13 +73,85 @@ def Normalise_last_coord(x):
     
     return xn
 
+def Normalize_points(points):
+    """
+    Compute a similarity transformation T ( translation & scaling ) such that the centroid of the 
+    new points is (0,0) and their mean distance of points to the origin is sqrt(2) 
+    """
+
+    centroids = np.mean(points, axis=1)
+    centroid_x = centroids[0]
+    centroid_y = centroids[1]
+
+    # compute the mean distance of points to the origin
+    mean_distance = np.mean(np.sqrt((points[0] - centroid_x)**2 + (points[1] - centroid_y)**2))
+
+    # compute the scaling factor
+    s = np.sqrt(2) / mean_distance
+
+    # compute the translation
+    tx = -s * centroid_x
+    ty = -s * centroid_y
+
+    # compute the transformation matrix
+    T = np.array([[s, 0, tx], [0, s, ty], [0, 0, 1]])
+
+    # apply the transformation
+    points_norm = T @ points
+
+    return points_norm, T
+
+
 def DLT_homography(points1, points2):
     
     # ToDo: complete this code .......
 
+    # normalization of x 
+    points1_norm , T1 = Normalize_points(points1)
+
+    #normalization of x'
+    points2_norm, T2 = Normalize_points(points2)
+
+    # Apply DLT to the correspondences 
+
+    A_list = []
+
+    for point1, point2 in zip(points1.T,points2.T):
+
+        x, y, w = point1
+        x = x / w
+        y = y / w
+
+        x_p, y_p, w_p = point2
+        x_p = x_p / w_p
+        y_p = y_p / w_p
+
+        Ai1 = np.array([-x, -y, -1, 0, 0, 0, x_p*x, x_p*x, x_p])
+        Ai2 = np.array([0, 0, 0, -x, -y, -1, y_p*x, y_p*x, y_p])
+
+        A_list.append(Ai1)
+        A_list.append(Ai2)
+    
+    A = np.array(A_list)
+
+    # Solve Ah = 0
+    U, D, Vt = np.linalg.svd(A)
+
+    # take the las col of V --> last row of V_transpose and reshape it to 3x3 matrix
+    H_tilde = np.reshape(Vt[-1],(3,3))
+
+    # Denormalization 
+    T2_inv = np.linalg.inv(T2)
+    H = T2_inv@H_tilde@T1
+
+    #normalize
+    H = H/H[-1,-1]
+
     return H
 
 def Inliers(H, points1, points2, th):
+
+    "compute the inliers for the homography H, given the correspondences points1 and points2 and the distance threshold th"
     
     # Check that H is invertible
     if abs(math.log(np.linalg.cond(H))) > 15:
@@ -86,8 +160,25 @@ def Inliers(H, points1, points2, th):
     
     
     # ToDo: complete this code .......
-    
-    return
+
+    # compute the transformed points
+    points1_transformed = H@points1
+    points2_transformed = np.linalg.inv(H)@points2
+
+    # normalize the points
+    points1_norm = Normalise_last_coord(points1)
+    points2_norm = Normalise_last_coord(points2)
+    points1_transformed_norm = Normalise_last_coord(points1_transformed)
+    points2_transformed_norm = Normalise_last_coord(points2_transformed)
+
+    # compute the distance between the transformed points and the original points --> use the geometric distance d or the distance d orhtogonal
+    d_orth_sq = np.sum(np.square(points2_norm - points1_transformed_norm), axis=0) +  np.sum(np.square(points2_transformed_norm - points1_norm), axis=0)  
+
+    # compute the inliers
+    idx = np.where(d_orth_sq < th**2)[0]
+
+    return idx
+
 
 def Ransac_DLT_homography(points1, points2, th, max_it):
     
