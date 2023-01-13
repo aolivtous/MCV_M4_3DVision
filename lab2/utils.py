@@ -73,7 +73,7 @@ def Normalise_last_coord(x):
     
     return xn
 
-def Normalize_points(points):
+def Normalize_points(points): # function added to normalize the points
     """
     Compute a similarity transformation T ( translation & scaling ) such that the centroid of the 
     new points is (0,0) and their mean distance of points to the origin is sqrt(2) 
@@ -116,7 +116,7 @@ def DLT_homography(points1, points2):
 
     A_list = []
 
-    for point1, point2 in zip(points1.T,points2.T):
+    for point1, point2 in zip(points1_norm.T,points2_norm.T):
 
         x, y, w = point1
         x = x / w
