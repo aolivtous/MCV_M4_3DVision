@@ -1,8 +1,7 @@
-import numpy as np
-from PIL import Image
 import matplotlib.pyplot as plt
 
-def line_draw(line, canv, size, color=(255,255,255)):
+
+def line_draw(line, canv, size, color=(255, 255, 255)):
     def get_y(t):
         return -(line[0] * t + line[2]) / line[1]
 
@@ -27,4 +26,3 @@ def plot_img(img, do_not_use=[0], axis=None):
         plt.imshow(img)
     else:
         plt.imshow(img, extent=axis)
-
