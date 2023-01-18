@@ -6,6 +6,9 @@ Pillow>=9.3.0
 tqdm>=4.64.1
 matplotlib>=3.6.2
 plotly>=5.12.0
+flake8
+black
+isort
 notebook
 ipywidgets
 jupyterlab

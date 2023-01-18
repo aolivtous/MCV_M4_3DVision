@@ -80,8 +80,8 @@ def Normalise_last_coord(x):
 
 def Normalize_points(points):  # function added to normalize the points
     """
-    Compute a similarity transformation T ( translation & scaling ) such that the centroid of the 
-    new points is (0,0) and their mean distance of points to the origin is sqrt(2) 
+    Compute a similarity transformation T ( translation & scaling ) such that the centroid of the
+    new points is (0,0) and their mean distance of points to the origin is sqrt(2)
     """
 
     centroids = np.mean(points, axis=1)
@@ -89,7 +89,9 @@ def Normalize_points(points):  # function added to normalize the points
     centroid_y = centroids[1]
 
     # compute the mean distance of points to the origin
-    mean_distance = np.mean(np.sqrt((points[0] - centroid_x) ** 2 + (points[1] - centroid_y) ** 2))
+    mean_distance = np.mean(
+        np.sqrt((points[0] - centroid_x) ** 2 + (points[1] - centroid_y) ** 2)
+    )
 
     # compute the scaling factor
     s = np.sqrt(2) / mean_distance
@@ -110,13 +112,13 @@ def Normalize_points(points):  # function added to normalize the points
 def DLT_homography(points1, points2):
     # ToDo: complete this code .......
 
-    # normalization of x 
+    # normalization of x
     points1, T1 = Normalize_points(points1)
 
     # normalization of x'
     points2, T2 = Normalize_points(points2)
 
-    # Apply DLT to the correspondences 
+    # Apply DLT to the correspondences
 
     A_list = []
 
@@ -143,7 +145,7 @@ def DLT_homography(points1, points2):
     # take the las col of V --> last row of V_transpose and reshape it to 3x3 matrix
     H_tilde = np.reshape(Vt[-1], (3, 3))
 
-    # Denormalization 
+    # Denormalization
     T2_inv = np.linalg.inv(T2)
     H = T2_inv @ H_tilde @ T1
 
@@ -174,11 +176,12 @@ def Inliers(H, points1, points2, th):
     points2_transformed_norm = Normalise_last_coord(points2_transformed)
 
     # compute the distance between the transformed points and the original points --> use the geometric distance d or the distance d orhtogonal
-    d_orth_sq = np.sum(np.square(points2_norm - points1_transformed_norm), axis=0) + np.sum(
-        np.square(points2_transformed_norm - points1_norm), axis=0)
+    d_orth_sq = np.sum(
+        np.square(points2_norm - points1_transformed_norm), axis=0
+    ) + np.sum(np.square(points2_transformed_norm - points1_norm), axis=0)
 
     # compute the inliers
-    idx = np.where(d_orth_sq < th ** 2)[0]
+    idx = np.where(d_orth_sq < th**2)[0]
 
     return idx
 
@@ -201,7 +204,7 @@ def Ransac_DLT_homography(points1, points2, th, max_it):
         # update estimate of iterations (the number of trials) to ensure we pick, with probability p,
         # an initial data set with no outliers
         fracinliers = inliers.shape[0] / Npts
-        pNoOutliers = 1 - fracinliers ** 4
+        pNoOutliers = 1 - fracinliers**4
         eps = sys.float_info.epsilon
         pNoOutliers = max(eps, pNoOutliers)  # avoid division by -Inf
         pNoOutliers = min(1 - eps, pNoOutliers)  # avoid division by 0
@@ -238,11 +241,56 @@ def plot_camera(P, w, h, fig, legend):
     p3 = o + view_direction(P, [w, h]) * scale
     p4 = o + view_direction(P, [0, h]) * scale
 
-    x = np.array([p1[0], p2[0], o[0], p3[0], p2[0], p3[0], p4[0], p1[0], o[0], p4[0], o[0], (p1[0] + p2[0]) / 2])
-    y = np.array([p1[1], p2[1], o[1], p3[1], p2[1], p3[1], p4[1], p1[1], o[1], p4[1], o[1], (p1[1] + p2[1]) / 2])
-    z = np.array([p1[2], p2[2], o[2], p3[2], p2[2], p3[2], p4[2], p1[2], o[2], p4[2], o[2], (p1[2] + p2[2]) / 2])
+    x = np.array(
+        [
+            p1[0],
+            p2[0],
+            o[0],
+            p3[0],
+            p2[0],
+            p3[0],
+            p4[0],
+            p1[0],
+            o[0],
+            p4[0],
+            o[0],
+            (p1[0] + p2[0]) / 2,
+        ]
+    )
+    y = np.array(
+        [
+            p1[1],
+            p2[1],
+            o[1],
+            p3[1],
+            p2[1],
+            p3[1],
+            p4[1],
+            p1[1],
+            o[1],
+            p4[1],
+            o[1],
+            (p1[1] + p2[1]) / 2,
+        ]
+    )
+    z = np.array(
+        [
+            p1[2],
+            p2[2],
+            o[2],
+            p3[2],
+            p2[2],
+            p3[2],
+            p4[2],
+            p1[2],
+            o[2],
+            p4[2],
+            o[2],
+            (p1[2] + p2[2]) / 2,
+        ]
+    )
 
-    fig.add_trace(go.Scatter3d(x=x, y=z, z=-y, mode='lines', name=legend))
+    fig.add_trace(go.Scatter3d(x=x, y=z, z=-y, mode="lines", name=legend))
 
     return
 
@@ -257,6 +305,6 @@ def plot_image_origin(w, h, fig, legend):
     y = np.array([p1[1], p2[1], p3[1], p4[1], p1[1]])
     z = np.array([p1[2], p2[2], p3[2], p4[2], p1[2]])
 
-    fig.add_trace(go.Scatter3d(x=x, y=z, z=-y, mode='lines', name=legend))
+    fig.add_trace(go.Scatter3d(x=x, y=z, z=-y, mode="lines", name=legend))
 
     return
