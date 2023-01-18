@@ -89,9 +89,7 @@ def Normalize_points(points):  # function added to normalize the points
     centroid_y = centroids[1]
 
     # compute the mean distance of points to the origin
-    mean_distance = np.mean(
-        np.sqrt((points[0] - centroid_x) ** 2 + (points[1] - centroid_y) ** 2)
-    )
+    mean_distance = np.mean(np.sqrt((points[0] - centroid_x) ** 2 + (points[1] - centroid_y) ** 2))
 
     # compute the scaling factor
     s = np.sqrt(2) / mean_distance
@@ -176,9 +174,9 @@ def Inliers(H, points1, points2, th):
     points2_transformed_norm = Normalise_last_coord(points2_transformed)
 
     # compute the distance between the transformed points and the original points --> use the geometric distance d or the distance d orhtogonal
-    d_orth_sq = np.sum(
-        np.square(points2_norm - points1_transformed_norm), axis=0
-    ) + np.sum(np.square(points2_transformed_norm - points1_norm), axis=0)
+    d_orth_sq = np.sum(np.square(points2_norm - points1_transformed_norm), axis=0) + np.sum(
+        np.square(points2_transformed_norm - points1_norm), axis=0
+    )
 
     # compute the inliers
     idx = np.where(d_orth_sq < th**2)[0]
