@@ -2,6 +2,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
+
 def line_draw(line, canv, size):
     def get_y(t):
         return -(line[0] * t + line[2]) / line[1]
