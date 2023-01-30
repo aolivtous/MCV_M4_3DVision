@@ -1,12 +1,7 @@
 import numpy as np
-from numpy import linalg as LA
-import cv2
 import math
 import sys
 import random
-import matplotlib
-from matplotlib import pyplot as plt
-from operator import itemgetter
 
 def Normalization(x):
 

@@ -1,10 +1,7 @@
-from collections.abc import Iterable
 from typing import Optional
 
 import numpy as np
-from PIL import Image
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
 
 
@@ -81,7 +78,7 @@ def view_direction(P, x):
 def draw_points(points, ax=None, **plot_kwargs):
     # Creating figure
     if ax is None:
-        fig = plt.figure(figsize=(10, 7))
+        plt.figure(figsize=(10, 7))
         ax = plt.axes(projection="3d")
     # Creating plot
     ax.scatter3D(points[:, 0], points[:, 1], points[:, 2], **plot_kwargs)
@@ -94,7 +91,7 @@ def draw_lines(points, ax: Optional[Axes3D] = None, **line_kwargs):
     :return:
     """
     if ax is None:
-        fig = plt.figure(figsize=(10, 7))
+        plt.figure(figsize=(10, 7))
         ax = plt.axes(projection="3d")
     assert isinstance(ax, Axes3D)
 
