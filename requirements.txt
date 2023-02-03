@@ -11,3 +11,4 @@ imageio
 notebook
 ipywidgets
 jupyterlab
+open3d
