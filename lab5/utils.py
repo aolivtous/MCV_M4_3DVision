@@ -3,6 +3,7 @@ from typing import Optional
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from numpy import linalg as LA
 
 
 def projective2img(x):
@@ -136,3 +137,41 @@ def plot_camera(P, w, h, scale, ax=None, **plot_kwargs):
     """
     points = get_camera_frame_points(P, w, h, scale)
     draw_lines(points, ax=ax, **plot_kwargs)
+
+
+def triangulate(x1, x2, P1, P2, imsize) -> np.ndarray:
+    assert P1.shape == (3,4) == P2.shape
+    assert x1.shape == x2.shape and x1.shape[0] == 3
+    '''
+    Your implementation here
+    '''
+       
+    # Normalization --> Scale and translate so that both pixel coordinates are in the range [-1,1]
+    x1 = x1/x1[2,:]
+    x2 = x2/x2[2,:]
+
+    nx = imsize[0]
+    ny = imsize[1]
+
+    H = [[2/nx,  0,     -1],
+        [0,      2/ny,  -1],
+        [0,      0,      1]]
+
+    # normalize the points and the camera matrices
+    x1 = H @ x1
+    x2= H @ x2
+    P1 = H @ P1
+    P2 = H @ P2
+
+    # create the A matrix
+    
+    X = []
+    for i in range(x1.shape[1]):
+        A = np.array([x1[0,i]*P1[2,:] - P1[0,:], 
+                      x1[1,i]*P1[2,:] - P1[1,:],
+                      x2[0,i]*P2[2,:] - P2[0,:],
+                      x2[1,i]*P2[2,:] - P2[1,:]])
+        U,D,Vt = LA.svd(A)
+        X.append(Vt[-1,:])
+        
+    return np.asarray(X).T
